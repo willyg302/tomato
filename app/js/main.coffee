@@ -1,5 +1,6 @@
 AudioSource = require './audio-source.coffee'
 SoundCloudLoader = require './soundcloud-loader.coffee'
+Visualizer = require './visualizer.coffee'
 
 
 updateTrackInfo = (loader) ->
@@ -24,18 +25,23 @@ updateTrackInfo = (loader) ->
 	infoTrack.innerHTML = ''
 	infoTrack.appendChild trackLink
 
-	# Finally show the thing
-	document.getElementById('trackInfo').style.display = 'flex'
-
 	# add a hash to the URL so it can be shared or saved
 	window.location.hash = track.permalink_url.substr(22)
 
 
 window.onload = ->
+	document.body.className = ''
 	player = document.getElementById 'player'
 	loader = new SoundCloudLoader player
 
 	source = new AudioSource player
+
+	visualizer = new Visualizer()
+
+	visualizer.init {
+		container: 'visualizer',
+		audioSource: source
+	}
 
 
 	loadTrack = (url) ->
@@ -43,6 +49,7 @@ window.onload = ->
 			(streamUrl) ->
 				source.playStream streamUrl
 				updateTrackInfo loader
+				document.body.className = 'playing'
 			->
 				# Error
 
@@ -53,14 +60,30 @@ window.onload = ->
 
 	submit = document.getElementById('submit')
 	submit.onkeypress = (e) ->
-		e ?= window.event
-		if e.keyCode is 10 or e.keyCode is 13
-			url = submit.value
-			submit.value = ''
-			loadTrack url
+		e.stopPropagation()
+		switch e.keyCode
+			when 10, 13
+				url = submit.value
+				submit.value = ''
+				loadTrack url
 
 
+	keyboardControls = (e) ->
+		switch e.keyCode
+			when 32
+				# space
+				loader.directStream 'toggle'
 
+	window.addEventListener 'keypress', keyboardControls, false
+
+
+###
+@TODO
+  - Error messages
+  - Make sure playlists work
+  - Music vis!
+  - Beat detection...? :D  http://www.airtightinteractive.com/2013/10/making-audio-reactive-visuals/
+###
 
 
 
@@ -73,10 +96,7 @@ window.onload = function init() {
 	var loader = new SoundCloudLoader(player,uiUpdater);
 
 	var audioSource = new SoundCloudAudioSource(player);
-	var form = document.getElementById('form');
-	var loadAndUpdate = function(trackUrl) {
-		
-	};
+	
 
 	visualizer.init({
 		containerId: 'visualizer',
@@ -84,24 +104,7 @@ window.onload = function init() {
 	});
 
 
-	uiUpdater.toggleControlPanel();
-	// on load, check to see if there is a track token in the URL, and if so, load that automatically
-	if (window.location.hash) {
-		var trackUrl = 'https://soundcloud.com/' + window.location.hash.substr(1);
-		loadAndUpdate(trackUrl);
-	}
-
-	// handle the form submit event to load the new URL
-	form.addEventListener('submit', function(e) {
-		e.preventDefault();
-		var trackUrl = document.getElementById('input').value;
-		loadAndUpdate(trackUrl);
-	});
-	var toggleButton = document.getElementById('toggleButton')
-	toggleButton.addEventListener('click', function(e) {
-		e.preventDefault();
-		uiUpdater.toggleControlPanel();
-	});
+	
 
 	window.addEventListener("keydown", keyControls, false);
 	 

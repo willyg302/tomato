@@ -2,12 +2,13 @@ class AudioSource
 	constructor: (@player) ->
 		audioContext = new (window.AudioContext or window.webkitAudioContext)
 		@analyser = audioContext.createAnalyser()
-		@analyser.fftSize = 256
+		#@analyser.fftSize = 4096  # Half this is the number of bins
 		audioContext.createMediaElementSource(@player).connect(@analyser)
 		@analyser.connect(audioContext.destination)
-
 		@volume = 0
-		@streamData = new Uint8Array 128
+		@streamData = new Uint8Array @analyser.frequencyBinCount
+
+		console.log @analyser.frequencyBinCount
 
 	_sampleAudioStream: ->
 		@analyser.getByteFrequencyData @streamData
