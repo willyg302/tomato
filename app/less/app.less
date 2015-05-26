@@ -1,0 +1,149 @@
+body {
+	background-color: @color-cobalt;
+	overflow: hidden;
+}
+
+
+// MENU AND TRIGGER
+
+.menu {
+	position: fixed;
+	background-color: rgba(255, 255, 255, 0.15);
+	width: 100%;
+	height: @menu-height;
+	bottom: -@menu-height;
+	padding: 20px;
+	.transition(bottom 0.2s);
+
+	#player {
+		width: 100%;
+	}
+
+	#submit {
+		margin: 0 auto;
+		max-width: 800px;
+	}
+}
+
+.menu-trigger {
+	position: absolute;
+	clip: rect(0, 0, 0, 0);
+
+	&:checked {
+		& + label {
+			bottom: @menu-height + 2 * @menu-trigger-margin;
+		}
+
+		& ~ #trackInfo {
+			bottom: @menu-height + @menu-trigger-margin;
+			opacity: 1;
+		}
+
+		& ~ .menu {
+			bottom: 0;
+			box-shadow: 0 0 5px 5px rgba(0, 0, 0, 0.5);
+		}
+
+		& ~ .bg .moving {
+			bottom: @menu-height;
+		}
+	}
+}
+
+label[for="menu-trigger"] {
+	position: fixed;
+	z-index: 2;
+	margin: 0;
+	width: @menu-trigger-width;
+	height: @menu-trigger-width;
+	bottom: @menu-trigger-margin * 2;
+	left: @menu-trigger-margin * 2;
+	cursor: pointer;
+	background-image: @img-hamburger;
+	background-size: contain;
+	opacity: 0.15;
+	.transition(~"bottom 0.2s, opacity 0.2s");
+
+	&:hover {
+		opacity: 0.5;
+
+		& ~ #trackInfo {
+			opacity: 1;
+		}
+	}
+}
+
+
+// BACKGROUND
+
+.bg {
+	& > * {
+		// From https://unsplash.com/
+		//background: url('https://download.unsplash.com/uploads/141327328038701afeede/eda0fb7c'); //river
+		//background: url('https://download.unsplash.com/reserve/ZF75d1lhQ0SyLWYEGOqO_21_forest_mountains.jpg');  //mountains 3
+		//background: url('https://download.unsplash.com/photo-1419064642531-e575728395f2');  // mountain 2
+		//background: url('https://download.unsplash.com/uploads/14115890754139bc8568d/d5e1ad1d');  // mountain
+		background: url('https://download.unsplash.com/photo-1414490929659-9a12b7e31907');  // beach
+		background-repeat: no-repeat;
+		background-attachment: fixed;
+		background-position: center;
+		background-size: cover;
+		position: fixed;
+		top: 0;
+		bottom: 0;
+		left: 0;
+		right: 0;
+	}
+
+	.blurred {
+		filter: blur(5px);
+		-webkit-filter: blur(5px);
+	}
+
+	.moving {
+		.transition(bottom 0.2s);
+	}
+}
+
+
+// TRACK INFO
+
+#trackInfo {
+	position: fixed;
+	z-index: 2;
+	bottom: @menu-trigger-margin;
+	left: @menu-trigger-width + 3 * @menu-trigger-margin;
+	opacity: 0;
+	.transition(~"bottom 0.2s, opacity 0.2s");
+	text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.8);
+	display: none;  // flex
+	align-items: flex-start;
+
+	img {
+		width: 2 * @menu-trigger-width;
+		
+	}
+
+	& > div {
+		padding-left: 10px;
+		white-space: nowrap;
+		flex: 1;
+	}
+
+	h3, h4 {
+		margin: 0;
+	}
+
+	h4 {
+		margin-bottom: 5px;
+	}
+
+	a {
+		text-decoration: none;
+		color: white;
+
+		&:hover {
+			color: @color-yellow;
+		}
+	}
+}
