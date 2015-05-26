@@ -10,6 +10,9 @@ def sub_key():
 		f.write(data)
 		f.truncate()
 
+def deploy():
+	ok.node('gulp deploy', module=True)
+
 def install():
 	ok.npm('install').bower('install', root='app')
 

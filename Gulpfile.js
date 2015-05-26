@@ -1,4 +1,5 @@
 var gulp       = require('gulp');
+var deploy     = require('gulp-gh-pages');
 var jade       = require('gulp-jade');
 var less       = require('gulp-less');
 var minifycss  = require('gulp-minify-css');
@@ -19,7 +20,8 @@ var paths = {
 	dist: './dist',
 	css: './app/less/main.less',
 	js: './app/js/main.coffee',
-	index: './app/jade/index.jade'
+	index: './app/jade/index.jade',
+	deploy: './dist/**/*'
 };
 
 gulp.task('clean', function(cb) {
@@ -52,6 +54,11 @@ gulp.task('compile-jade', function() {
 	return gulp.src(paths.index)
 		.pipe(jade())
 		.pipe(gulp.dest(paths.dist));
+});
+
+gulp.task('deploy', function() {
+	return gulp.src(paths.deploy)
+		.pipe(deploy());
 });
 
 gulp.task('default', ['clean'], function() {
