@@ -3,6 +3,11 @@ SoundCloudLoader = require './soundcloud-loader.coffee'
 Visualizer = require './visualizer.coffee'
 
 
+plyr.setup {
+	controls: ["restart", "play", "current-time", "duration", "mute", "volume"]
+}
+
+
 updateTrackInfo = (loader) ->
 	track = loader.sound
 
@@ -83,6 +88,13 @@ window.onload = ->
   - Make sure playlists work
   - Music vis!
   - Beat detection...? :D  http://www.airtightinteractive.com/2013/10/making-audio-reactive-visuals/
+  - Dynamic images
+  - Analytics
+  - Fix CORS
+    http://jsfiddle.net/thebigfeel/f8xn99wq/
+    https://twitter.com/therealbigfeel/status/592454329962926080
+  - Integrate plyr
+    To be able to play a buffer maybe have to hook into https://github.com/Ircam-RnD/player
 ###
 
 
