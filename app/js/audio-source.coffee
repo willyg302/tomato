@@ -1,5 +1,5 @@
 class AudioSource
-	constructor: (@player) ->
+	constructor: (@player, @loader) ->
 		audioContext = new (window.AudioContext or window.webkitAudioContext)
 		@analyser = audioContext.createAnalyser()
 		#@analyser.fftSize = 4096  # Half this is the number of bins
@@ -7,8 +7,6 @@ class AudioSource
 		@analyser.connect(audioContext.destination)
 		@volume = 0
 		@streamData = new Uint8Array @analyser.frequencyBinCount
-
-		console.log @analyser.frequencyBinCount
 
 	_sampleAudioStream: ->
 		@analyser.getByteFrequencyData @streamData
@@ -20,8 +18,8 @@ class AudioSource
 
 	playStream: (url) ->
 		# Get input stream from audio element
-		@player.addEventListener 'ended', ->
-			@directStream 'coasting'
+		@player.addEventListener 'ended', =>
+			@loader.directStream 'coasting'
 		@player.setAttribute 'src', url
 		@player.play()
 		# Loop samples

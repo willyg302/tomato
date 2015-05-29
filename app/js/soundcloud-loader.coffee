@@ -23,11 +23,13 @@ class SoundCloudLoader
 				@sound = sound
 				if sound.kind is 'playlist'
 					@streamPlaylistIndex = 0
-					streamUrl = @sound.tracks[@streamPlaylistIndex].stream_url + "?client_id=" + @client_id
+					@streamUrl = =>
+						@sound.tracks[@streamPlaylistIndex].stream_url + "?client_id=" + @client_id
 				else
 					@sound = sound
-					streamUrl = @sound.stream_url + "?client_id=" + @client_id
-				success(streamUrl)
+					@streamUrl = =>
+						@sound.stream_url + "?client_id=" + @client_id
+				success(@streamUrl)
 
 
 	directStream: (direction) ->
@@ -51,7 +53,7 @@ class SoundCloudLoader
 					@streamPlaylistIndex--
 			if @streamPlaylistIndex >= 0 and @streamPlaylistIndex <= @sound.track_count - 1
 				@player.setAttribute 'src', @streamUrl()
-				#@updater.update this
+				@updater this
 				@player.play()
 
 

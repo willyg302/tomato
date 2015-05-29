@@ -4,7 +4,7 @@ Visualizer = require './visualizer.coffee'
 
 
 plyr.setup {
-	controls: ["restart", "play", "current-time", "duration", "mute", "volume"]
+	controls: ['restart', 'play', 'current-time', 'duration', 'mute', 'volume']
 }
 
 
@@ -16,6 +16,8 @@ updateTrackInfo = (loader) ->
 	artistLink = document.createElement('a')
 	artistLink.setAttribute('href', track.user.permalink_url)
 	artistLink.innerHTML = track.user.username
+	if track.kind is 'playlist'
+		artistLink.innerHTML += " [#{track.title}]"
 	infoArtist = document.getElementById('infoArtist')
 	infoArtist.innerHTML = ''
 	infoArtist.appendChild artistLink
@@ -37,9 +39,9 @@ updateTrackInfo = (loader) ->
 window.onload = ->
 	document.body.className = ''
 	player = document.getElementById 'player'
-	loader = new SoundCloudLoader player
+	loader = new SoundCloudLoader player, updateTrackInfo
 
-	source = new AudioSource player
+	source = new AudioSource player, loader
 
 	visualizer = new Visualizer()
 
@@ -52,7 +54,7 @@ window.onload = ->
 	loadTrack = (url) ->
 		loader.loadStream url,
 			(streamUrl) ->
-				source.playStream streamUrl
+				source.playStream streamUrl()
 				updateTrackInfo loader
 				document.body.className = 'playing'
 			->
@@ -76,10 +78,16 @@ window.onload = ->
 	keyboardControls = (e) ->
 		switch e.keyCode
 			when 32
-				# space
+				# Space
 				loader.directStream 'toggle'
+			when 37
+				# Left arrow
+				loader.directStream 'backward'
+			when 39
+				# Right arrow
+				loader.directStream 'forward'
 
-	window.addEventListener 'keypress', keyboardControls, false
+	window.addEventListener 'keydown', keyboardControls, false
 
 
 ###
@@ -95,46 +103,5 @@ window.onload = ->
     https://twitter.com/therealbigfeel/status/592454329962926080
   - Integrate plyr
     To be able to play a buffer maybe have to hook into https://github.com/Ircam-RnD/player
-###
-
-
-
-###
-window.onload = function init() {
-
-	var visualizer = new Visualizer();
-	var player =  document.getElementById('player');
-	var uiUpdater = new UiUpdater();
-	var loader = new SoundCloudLoader(player,uiUpdater);
-
-	var audioSource = new SoundCloudAudioSource(player);
-	
-
-	visualizer.init({
-		containerId: 'visualizer',
-		audioSource: audioSource
-	});
-
-
-	
-
-	window.addEventListener("keydown", keyControls, false);
-	 
-	function keyControls(e) {
-		switch(e.keyCode) {
-			case 32:
-				// spacebar pressed
-				loader.directStream('toggle');
-				break;
-			case 37:
-				// left key pressed
-				loader.directStream('backward');
-				break;
-			case 39:
-				// right key pressed
-				loader.directStream('forward');
-				break;
-		}   
-	}
-};
+  - This code is so tightly coupled agh
 ###
