@@ -11,26 +11,25 @@ plyr.setup {
 updateTrackInfo = (loader) ->
 	track = loader.sound
 
-	document.getElementById('infoImage').setAttribute('src', track.artwork_url ? track.user.avatar_url)
+	document
+		.getElementById 'infoImage'
+		.setAttribute 'src', track.artwork_url ? track.user.avatar_url
 
-	artistLink = document.createElement('a')
-	artistLink.setAttribute('href', track.user.permalink_url)
-	artistLink.innerHTML = track.user.username
-	if track.kind is 'playlist'
-		artistLink.innerHTML += " [#{track.title}]"
-	infoArtist = document.getElementById('infoArtist')
-	infoArtist.innerHTML = ''
-	infoArtist.appendChild artistLink
+	addLink = (href, inner, parent) ->
+		link = document.createElement 'a'
+		link.setAttribute 'href', href
+		link.innerHTML = inner
+		pElem = document.getElementById parent
+		pElem.innerHTML = ''
+		pElem.appendChild link
 
-	trackLink = document.createElement('a')
-	trackLink.setAttribute('href', track.permalink_url)
+	artist = track.user.username
 	if track.kind is 'playlist'
-		trackLink.innerHTML = track.tracks[loader.streamPlaylistIndex].title
-	else
-		trackLink.innerHTML = track.title
-	infoTrack = document.getElementById('infoTrack')
-	infoTrack.innerHTML = ''
-	infoTrack.appendChild trackLink
+		artist += " [#{track.title}]"
+	addLink track.user.permalink_url, artist, 'infoArtist'
+
+	song = if track.kind is 'playlist' then track.tracks[loader.streamPlaylistIndex].title else track.title
+	addLink track.permalink_url, song, 'infoTrack'
 
 	# add a hash to the URL so it can be shared or saved
 	window.location.hash = track.permalink_url.substr(22)
@@ -40,15 +39,8 @@ window.onload = ->
 	document.body.className = ''
 	player = document.getElementById 'player'
 	loader = new SoundCloudLoader player, updateTrackInfo
-
 	source = new AudioSource player, loader
-
-	visualizer = new Visualizer()
-
-	visualizer.init {
-		container: 'visualizer',
-		audioSource: source
-	}
+	visualizer = new Visualizer 'visualizer', source
 
 
 	loadTrack = (url) ->
@@ -65,7 +57,7 @@ window.onload = ->
 		loadTrack "https://soundcloud.com/#{window.location.hash.substr(1)}"
 
 
-	submit = document.getElementById('submit')
+	submit = document.getElementById 'submit'
 	submit.onkeypress = (e) ->
 		e.stopPropagation()
 		switch e.keyCode
@@ -93,7 +85,6 @@ window.onload = ->
 ###
 @TODO
   - Error messages
-  - Make sure playlists work
   - Music vis!
   - Beat detection...? :D  http://www.airtightinteractive.com/2013/10/making-audio-reactive-visuals/
   - Dynamic images

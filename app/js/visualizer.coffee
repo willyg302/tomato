@@ -1,13 +1,11 @@
 class Visualizer
-	init: (opts) ->
-		@audioSource = opts.audioSource
-
+	constructor: (container, @audioSource) ->
 		canvas = document.createElement 'canvas'
 		canvas.width = 384
 		canvas.height = 384
 		@context = canvas.getContext '2d'
 		document
-			.getElementById opts.container
+			.getElementById container
 			.appendChild canvas
 
 		@_draw()
