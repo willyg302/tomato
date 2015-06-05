@@ -28,7 +28,7 @@ updateTrackInfo = (loader) ->
 		artist += " [#{track.title}]"
 	addLink track.user.permalink_url, artist, 'infoArtist'
 
-	song = if track.kind is 'playlist' then track.tracks[loader.streamPlaylistIndex].title else track.title
+	song = if track.kind is 'playlist' then track.tracks[loader.playlistIndex].title else track.title
 	addLink track.permalink_url, song, 'infoTrack'
 
 	# add a hash to the URL so it can be shared or saved
@@ -49,8 +49,8 @@ window.onload = ->
 				source.playStream streamUrl()
 				updateTrackInfo loader
 				document.body.className = 'playing'
-			->
-				# Error
+			(error) ->
+				console.error error
 
 
 	if window.location.hash
@@ -69,15 +69,9 @@ window.onload = ->
 
 	keyboardControls = (e) ->
 		switch e.keyCode
-			when 32
-				# Space
-				loader.directStream 'toggle'
-			when 37
-				# Left arrow
-				loader.directStream 'backward'
-			when 39
-				# Right arrow
-				loader.directStream 'forward'
+			when 32 then loader.toggle()  # Space
+			when 37 then loader.forward()  # Left arrow
+			when 39 then loader.backward()  # Right arrow
 
 	window.addEventListener 'keydown', keyboardControls, false
 
@@ -85,7 +79,6 @@ window.onload = ->
 ###
 @TODO
   - Error messages
-  - Music vis!
   - Beat detection...? :D  http://www.airtightinteractive.com/2013/10/making-audio-reactive-visuals/
   - Dynamic images
   - Analytics

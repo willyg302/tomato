@@ -6,7 +6,6 @@ class SoundCloudLoader
 			.map (c) -> ((parseInt(c, 16) + 13) % 16).toString 16
 			.join ''
 		@sound = {}
-		@errorMessage = ''
 
 	loadStream: (url, success, failure) ->
 		SC.initialize {
@@ -14,47 +13,47 @@ class SoundCloudLoader
 		}
 		SC.get '/resolve', { url: url }, (sound) =>
 			if sound.errors
-				@errorMessage = 'Something bad happened'
-				#for (var i = 0; i < sound.errors.length; i++) {
-					#self.errorMessage += sound.errors[i].error_message + '<br>';
-				#}
-				failure()
+				failure sound.errors
+					.map (error) -> error.error_message
+					.join '\n'
 			else
 				@sound = sound
 				if sound.kind is 'playlist'
-					@streamPlaylistIndex = 0
+					@playlistIndex = 0
 					@streamUrl = =>
-						@sound.tracks[@streamPlaylistIndex].stream_url + "?client_id=" + @client_id
+						@sound.tracks[@playlistIndex].stream_url + "?client_id=" + @client_id
 				else
 					@sound = sound
 					@streamUrl = =>
 						@sound.stream_url + "?client_id=" + @client_id
 				success(@streamUrl)
 
+	_update: ->
+		if @playlistIndex >= 0 and @playlistIndex <= @sound.track_count - 1
+			@player.setAttribute 'src', @streamUrl()
+			@updater this
+			@player.play()
 
-	directStream: (direction) ->
-		if direction is 'toggle'
-			if @player.paused
-				@player.play()
-			else
-				@player.pause()
-		else if @sound.kind is 'playlist'
-			if direction is 'coasting'
-				@streamPlaylistIndex++
-			else if direction is 'forward'
-				if @streamPlaylistIndex >= @sound.track_count - 1
-					@streamPlaylistIndex = 0
-				else
-					@streamPlaylistIndex++
-			else
-				if @streamPlaylistIndex <= 0
-					@streamPlaylistIndex = @sound.track_count - 1
-				else
-					@streamPlaylistIndex--
-			if @streamPlaylistIndex >= 0 and @streamPlaylistIndex <= @sound.track_count - 1
-				@player.setAttribute 'src', @streamUrl()
-				@updater this
-				@player.play()
+	coast: ->
+		if @sound.kind is 'playlist'
+			@playlistIndex++
+			@_update()
+
+	toggle: ->
+		if @player.paused
+			@player.play()
+		else
+			@player.pause()
+
+	forward: ->
+		if @sound.kind is 'playlist'
+			@playlistIndex = (@playlistIndex + 1) % @sound.track_count
+			@_update()
+
+	backward: ->
+		if @sound.kind is 'playlist'
+			@playlistIndex = (@playlistIndex - 1 + @sound.track_count) % @sound.track_count
+			@_update()
 
 
 module.exports = SoundCloudLoader
