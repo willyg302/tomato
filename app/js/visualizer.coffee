@@ -12,7 +12,11 @@ class Visualizer
 
 	_draw: =>
 		@context.clearRect 0, 0, 384, 384
-		@context.fillStyle = '#000000'
+		@context.fillStyle = '#ffffff'
+		@context.shadowColor = '#ffffff'
+		@context.shadowBlur = 10
+		@context.shadowOffsetX = 0
+		@context.shadowOffsetY = 0
 		@context.lineCap = 'round'
 
 		for i in [0..127]
