@@ -8,6 +8,34 @@ plyr.setup {
 }
 
 
+particlesJS 'particles', {
+	particles:
+		number:
+			value: 100
+		color:
+			value: '#ffffff'
+		shape:
+			type: 'circle'
+		opacity:
+			value: 0.5
+		size:
+			value: 3
+			random: true
+		line_linked:
+			enable: false
+		move:
+			enable: true
+			speed: 2
+			direction: 'top'
+			out_mode: 'out'
+	interactivity:
+		events:
+			onhover:
+				enable: false
+	retina_detect: true
+}
+
+
 updateTrackInfo = (loader) ->
 	track = loader.sound
 
@@ -53,8 +81,14 @@ window.onload = ->
 				console.error error
 
 
+	window.pJSDom[0].pJS.fn.particlesRefresh()
+
+
 	if window.location.hash
 		loadTrack "https://soundcloud.com/#{window.location.hash.substr(1)}"
+	else
+		# Let's add a default track for now
+		loadTrack 'https://soundcloud.com/mrsuicidesheep/attom-glow'
 
 
 	submit = document.getElementById 'submit'

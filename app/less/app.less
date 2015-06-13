@@ -189,6 +189,10 @@ body.loading {
 	.bg > * {
 		opacity: 0;
 	}
+
+	#particles {
+		display: none;
+	}
 }
 
 .loading-message {
@@ -212,7 +216,7 @@ body.playing {
 
 // VIS
 
-canvas {
+#visualizer canvas {
 	position: fixed;
 	top: 50%;
 	left: 50%;
@@ -221,4 +225,11 @@ canvas {
 	//width: 384px;
 	//height: 384px;
 	.transition(margin-top 0.2s);
+}
+
+#particles {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	display: visible;
 }
